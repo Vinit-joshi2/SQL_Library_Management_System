@@ -1,9 +1,8 @@
-# Library Management System using SQL Project --P2
+# Library Management System using SQL Project 
 
 ## Project Overview
 
 **Project Title**: Library Management System  
-**Level**: Intermediate  
 **Database**: `library_db`
 
 This project demonstrates the implementation of a Library Management System using SQL. It includes creating and managing tables, performing CRUD operations, and executing advanced SQL queries. The goal is to showcase skills in database design, manipulation, and querying.
@@ -26,86 +25,99 @@ This project demonstrates the implementation of a Library Management System usin
 - **Table Creation**: Created tables for branches, employees, members, books, issued status, and return status. Each table includes relevant columns and relationships.
 
 ```sql
-CREATE DATABASE library_db;
+-- Creating branch table
+create table branch(
+	branch_id varchar(10) primary key,
+	manager_id varchar(10),
+	branch_address varchar(55),
+	contact_no varchar(10)
+)
 
-DROP TABLE IF EXISTS branch;
-CREATE TABLE branch
-(
-            branch_id VARCHAR(10) PRIMARY KEY,
-            manager_id VARCHAR(10),
-            branch_address VARCHAR(30),
-            contact_no VARCHAR(15)
-);
+alter table branch
+alter column contact_no type varchar(25)
 
+-- Creating employees table
+create table employees(
+	emp_id varchar(10) primary key,
+	emp_name varchar(25),
+	position varchar(25),
+	salary int,
+	branch_id varchar(25)	  -- FK
+)
 
--- Create table "Employee"
-DROP TABLE IF EXISTS employees;
-CREATE TABLE employees
-(
-            emp_id VARCHAR(10) PRIMARY KEY,
-            emp_name VARCHAR(30),
-            position VARCHAR(30),
-            salary DECIMAL(10,2),
-            branch_id VARCHAR(10),
-            FOREIGN KEY (branch_id) REFERENCES  branch(branch_id)
-);
+-- Creating books table
 
+create table books(
+	isbin varchar(20) primary key,
+	book_title varchar(80),
+	category varchar(10),
+	rental_price float,
+	status varchar(45),
+	author varchar(35),
+	publisher varchar(55)
+)
 
--- Create table "Members"
-DROP TABLE IF EXISTS members;
-CREATE TABLE members
-(
-            member_id VARCHAR(10) PRIMARY KEY,
-            member_name VARCHAR(30),
-            member_address VARCHAR(30),
-            reg_date DATE
-);
+alter TABLE books
+alter column category type varchar(20)
 
+-- Creating members table
 
+create table members(
+	member_id varchar(30) primary key,
+	member_name varchar(45),
+	member_address varchar(85),
+	reg_date DATE
+)
 
--- Create table "Books"
-DROP TABLE IF EXISTS books;
-CREATE TABLE books
-(
-            isbn VARCHAR(50) PRIMARY KEY,
-            book_title VARCHAR(80),
-            category VARCHAR(30),
-            rental_price DECIMAL(10,2),
-            status VARCHAR(10),
-            author VARCHAR(30),
-            publisher VARCHAR(30)
-);
+-- Creating issued details table
 
+create table issued_status(
+	issued_id varchar(15) primary key,
+	issued_member_id varchar(15),  -- FK
+	issued_book_name varchar(75),
+	issued_date DATE,
+	issued_book_isbn varchar(35), -- FK
+	issued_emp_id varchar(10)    -- FK
+)
 
+-- Creating return status details table
 
--- Create table "IssueStatus"
-DROP TABLE IF EXISTS issued_status;
-CREATE TABLE issued_status
-(
-            issued_id VARCHAR(10) PRIMARY KEY,
-            issued_member_id VARCHAR(30),
-            issued_book_name VARCHAR(80),
-            issued_date DATE,
-            issued_book_isbn VARCHAR(50),
-            issued_emp_id VARCHAR(10),
-            FOREIGN KEY (issued_member_id) REFERENCES members(member_id),
-            FOREIGN KEY (issued_emp_id) REFERENCES employees(emp_id),
-            FOREIGN KEY (issued_book_isbn) REFERENCES books(isbn) 
-);
+create table return_status(
 
+	return_id varchar(10) primary key,
+	issued_id varchar(10),
+	return_book_name varchar(75),
+	return_date DATE,
+	return_book_isbn varchar(20)
+)
 
 
--- Create table "ReturnStatus"
-DROP TABLE IF EXISTS return_status;
-CREATE TABLE return_status
-(
-            return_id VARCHAR(10) PRIMARY KEY,
-            issued_id VARCHAR(30),
-            return_book_name VARCHAR(80),
-            return_date DATE,
-            return_book_isbn VARCHAR(50),
-            FOREIGN KEY (return_book_isbn) REFERENCES books(isbn)
-);
+-- Foreign key 
+alter table issued_status
+add constraint fk_members
+FOREIGN key (issued_member_id)
+REFERENCES members(member_id)
+
+alter table issued_status
+add constraint fk_book
+FOREIGN key (issued_book_isbn)
+REFERENCES books(isbin)
+
+alter table issued_status
+add constraint fk_employees
+FOREIGN key (issued_emp_id)
+REFERENCES employees(emp_id)
+
+
+alter table employees
+add constraint fk_branch
+FOREIGN key (branch_id)
+REFERENCES branch(branch_id)
+
+alter table return_status
+add constraint fk_return_status
+FOREIGN key (issued_id)
+REFERENCES issued_status(issued_id)
 
 ```
 
